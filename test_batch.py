@@ -3,6 +3,8 @@ import glob
 import cv2
 import numpy as np
 import tensorflow as tf
+import re
+
 
 # --- KONFIGURASI PENTING ---
 # 1. Path folder diatur ke dataset augmentasi Anda
@@ -46,7 +48,6 @@ def extract_features(image_bgr, advanced=False):
         if image_bgr is None: return None
         gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        # Coba nilai Canny yang lebih toleran untuk menangani berbagai kualitas gambar
         edged = cv2.Canny(blurred, 15, 60) 
         contours, _ = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if not contours: return None
@@ -107,6 +108,7 @@ def analyze_image(image_path):
         prediction = model.predict(input_data, verbose=0)
         predicted_index = np.argmax(prediction[0])
         
+
         if param in LABEL_MAPS:
             predicted_label = LABEL_MAPS[param][predicted_index]
         else:
@@ -118,6 +120,7 @@ def analyze_image(image_path):
 
 # --- SCRIPT UTAMA UNTUK ANALISIS INTERAKTIF ---
 if __name__ == "__main__":
+
     image_paths = glob.glob(os.path.join(TEST_IMAGE_FOLDER, '*.jpg')) + \
                   glob.glob(os.path.join(TEST_IMAGE_FOLDER, '*.png'))
 
